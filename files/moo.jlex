@@ -60,7 +60,7 @@ ESCAPED_BAD = [\\][^nt'\"?\\]
 STRING_CHAR = [^\n\"\\]
 DIGIT=        [0-9]
 WHITESPACE=   [\040\t]
-QUOTE = [\"]
+QUOTE = \042
 
 %implements java_cup.runtime.Scanner
 %function next_token
@@ -73,7 +73,6 @@ return new Symbol(sym.EOF);
 %line
 
 %%
-
 
 {QUOTE}({STRING_CHAR}|{ESCAPED})*{QUOTE}  {
                                     Symbol S = new Symbol(sym.STRINGLITERAL,
