@@ -39,6 +39,36 @@ public class P2 {
         System.exit(testsFailed ? 1 : 0);
     }
 
+    public boolean testGoodIntLiteral() throws IOException {
+        String in = "2147483647";
+        StringReader sr = new StringReader(in);
+        Yylex scanner = new Yylex(sr);
+        Symbol token = scanner.next_token(); 
+        IntLitTokenVal t = (IntLitTokenVal)(token.value);
+        sr.close();
+        if ((Integer.parseInt(in) != t.intVal) ||
+            (t.linenum != 1) || (t.charnum != 1))
+            return false;
+        if (CharNum.num != (in.length() + 1))
+            return false;
+        return true;
+    }
+
+    public boolean testOverflowIntLiteral() throws IOException {
+        String in = "2147483648";
+        StringReader sr = new StringReader(in);
+        Yylex scanner = new Yylex(sr);
+        Symbol token = scanner.next_token(); 
+        IntLitTokenVal t = (IntLitTokenVal)(token.value);
+        sr.close();
+        if ((Integer.MAX_VALUE != t.intVal) ||
+            (t.linenum != 1) || (t.charnum != 1))
+            return false;
+        if (CharNum.num != (in.length() + 1))
+            return false;
+        return true;
+    }
+
     /**
      * testAllTokens
      *
