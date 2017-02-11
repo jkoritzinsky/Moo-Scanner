@@ -3,3 +3,4 @@ moo.jlex.java
 files.iml
 .idea/
 allTokens.*
+out/

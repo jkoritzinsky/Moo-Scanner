@@ -1,3 +1,5 @@
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.io.*;
 import java_cup.runtime.*;  // defines Symbol
@@ -11,9 +13,26 @@ import java_cup.runtime.*;  // defines Symbol
 public class P2 {
     public static void main(String[] args) throws IOException {
                                            // exception may be thrown by yylex
-        // test all tokens
-        testAllTokens();
-        CharNum.num = 1;
+        P2 p1 = new P2();
+        Method[] testMethods = P2.class.getMethods();
+
+        for (Method method : testMethods) {
+            // Only execute methods declared by the P1 class and are not main.
+            // By my design, all of the rest of the methods on P1
+            // are test methods.
+            if (method.getDeclaringClass() == P2.class
+                    && method.getName() != "main") {
+                CharNum.num = 1;
+                try {
+                    boolean passed = (boolean) method.invoke(p1);
+                    if (!passed) {
+                        System.out.printf("Test %s failed\n", method.getName());
+                    }
+                } catch (IllegalAccessException | InvocationTargetException ex){
+                    System.out.printf("Test %s failed\n", method.getName());
+                }
+            }
+        }
     
         // ADD CALLS TO OTHER TEST METHODS HERE
     }
@@ -27,7 +46,7 @@ public class P2 {
      * correctness of the scanner by comparing the input and output files
      * (e.g., using a 'diff' command).
      */
-    private static void testAllTokens() throws IOException {
+    private void testAllTokens() throws IOException {
         // open input and output files
         FileReader inFile = null;
         PrintWriter outFile = null;
