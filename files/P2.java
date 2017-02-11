@@ -179,8 +179,8 @@ public class P2 {
             return  token.sym == sym.INTLITERAL
                     && CharNum.num == test.length() + 1
                     && intLitVal.intVal == Integer.parseInt(test.substring(21))
-                    && value.linenum == 1
-                    && value.charnum == 22;
+                    && intLitVal.linenum == 1
+                    && intLitVal.charnum == 22;
         }
     }
 
