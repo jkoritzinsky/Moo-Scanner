@@ -148,6 +148,41 @@ public class P2 {
         }
     }
 
+    public boolean testTrailingWhitespace() throws IOException {
+        String test = "_my_Identifier42    	";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IdTokenVal value = ((IdTokenVal) token.value);
+            return  token.sym == sym.ID
+                    && CharNum.num == test.substring(0,16).length() + 1
+                    && value.idVal.equals(test.substring(0,16))
+                    && value.linenum == 1
+                    && value.charnum == 1;
+        }
+    }
+
+    public boolean testWhitespaceBetweenIdentifierAndIntLiteral() throws IOException {
+        String test = "_my_Identifier42    	608";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IdTokenVal value = ((IdTokenVal) token.value);
+            if (token.sym != sym.ID
+                || CharNum.num != test.substring(0,16).length() + 1
+                || !value.idVal.equals(test.substring(0,16))
+                || value.linenum != 1
+                || value.charnum != 1)
+                return false;
+            token = lexer.next_token();
+            IntLitTokenVal intLitVal = ((IntLitTokenVal) token.value);
+            return  token.sym == sym.INTLITERAL
+                    && CharNum.num == test.length() + 1
+                    && intLitVal.intVal == Integer.parseInt(test.substring(21))
+                    && value.linenum == 1
+                    && value.charnum == 22;
+        }
+    }
 
     /**
      * testAllTokens
