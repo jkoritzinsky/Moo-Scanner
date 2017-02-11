@@ -35,6 +35,8 @@ ErrMsg.class: ErrMsg.java
 # testing - add more here to run your tester and compare its results
 # to expected results
 ###
+.PHONY: test clean cleantest
+
 test:
 	java -cp $(CP) P2 
 	diff allTokens.in allTokens.out

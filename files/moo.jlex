@@ -55,9 +55,12 @@ class CharNum {
     static int num=1;
 }
 %%
-
+ESCAPED = [\\][nt'?\"\\]
+ESCAPED_BAD = [\\][^nt'\"?\\]
+STRING_CHAR = [^\n\"\\]
 DIGIT=        [0-9]
 WHITESPACE=   [\040\t]
+QUOTE = [\"]
 
 %implements java_cup.runtime.Scanner
 %function next_token
@@ -70,6 +73,32 @@ return new Symbol(sym.EOF);
 %line
 
 %%
+
+
+{QUOTE}({STRING_CHAR}|{ESCAPED})*{QUOTE}  {
+                                    Symbol S = new Symbol(sym.STRINGLITERAL,
+                                        new StrLitTokenVal(yyline, CharNum.num, yytext()));
+                                    CharNum.num += yytext().length();
+                                    return S;
+                               }
+
+{QUOTE}({STRING_CHAR}|{ESCAPED}|{ESCAPED_BAD})*{QUOTE}  {
+                                    ErrMsg.fatal(yyline+1, CharNum.num,
+                                        "string literal with bad escaped character ignored");
+                                    CharNum.num += yytext().length();
+                               }
+
+{QUOTE}({STRING_CHAR}|{ESCAPED})*  {
+                                    ErrMsg.fatal(yyline + 1, CharNum.num,
+                                        "unterminated string literal ignored");
+                                    CharNum.num += yytext().length();
+                                }
+
+{QUOTE}({STRING_CHAR}|{ESCAPED}|{ESCAPED_BAD})*  {
+                                    ErrMsg.fatal(yyline+1, CharNum.num,
+                                        "unterminated string literal with bad escaped character ignored");
+                                    CharNum.num += yytext().length();
+                               }
 
 {DIGIT}+  { // NOTE: the following computation of the integer value does NOT
             //       check for overflow.  This must be changed.
