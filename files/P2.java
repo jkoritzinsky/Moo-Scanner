@@ -46,6 +46,8 @@ public class P2 {
         Symbol token = scanner.next_token(); 
         IntLitTokenVal t = (IntLitTokenVal)(token.value);
         sr.close();
+        if (token.sym != sym.INTLITERAL)
+            return false;
         if ((Integer.parseInt(in) != t.intVal) ||
             (t.linenum != 1) || (t.charnum != 1))
             return false;
@@ -61,6 +63,8 @@ public class P2 {
         Symbol token = scanner.next_token(); 
         IntLitTokenVal t = (IntLitTokenVal)(token.value);
         sr.close();
+        if (token.sym != sym.INTLITERAL)
+            return false;
         if ((Integer.MAX_VALUE != t.intVal) ||
             (t.linenum != 1) || (t.charnum != 1))
             return false;
@@ -68,6 +72,82 @@ public class P2 {
             return false;
         return true;
     }
+
+    public boolean testValidIdentifierThatStartsWithLetter() throws IOException {
+        String test = "my_Identifier35";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IdTokenVal value = ((IdTokenVal) token.value);
+            return  token.sym == sym.ID
+                    && CharNum.num == test.length() + 1
+                    && value.idVal.equals(test)
+                    && value.linenum == 1
+                    && value.charnum == 1;
+        }
+    }
+
+    public boolean testValidIdentifierThatStartsWithUnderscore() throws IOException {
+        String test = "_my_Identifier42";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IdTokenVal value = ((IdTokenVal) token.value);
+            return  token.sym == sym.ID
+                    && CharNum.num == test.length() + 1
+                    && value.idVal.equals(test)
+                    && value.linenum == 1
+                    && value.charnum == 1;
+        }
+    }
+
+    public boolean testValidIdentifierThatStartsWithReservedWord() throws IOException {
+        String test = "bool5";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IdTokenVal value = ((IdTokenVal) token.value);
+            return  token.sym == sym.ID
+                    && CharNum.num == test.length() + 1
+                    && value.idVal.equals(test)
+                    && value.linenum == 1
+                    && value.charnum == 1;
+        }
+    }
+
+    public boolean testInvalidIdentifierThatStartsWithDigit() throws IOException {
+        // should be seen as a digit followed by an id
+        String test = "42_bool";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IntLitTokenVal intLitVal = ((IntLitTokenVal) token.value);
+            if (token.sym != sym.INTLITERAL
+                || CharNum.num != test.substring(0,2).length() + 1
+                || (intLitVal.intVal != Integer.parseInt(test.substring(0,2)))
+                || intLitVal.linenum != 1
+                || intLitVal.charnum != 1)
+                return false;
+            CharNum.num = 1;
+            token = lexer.next_token();
+            IdTokenVal idVal = ((IdTokenVal) token.value);
+            return  token.sym == sym.ID
+                    && CharNum.num == test.substring(2).length() + 1
+                    && idVal.idVal.equals(test.substring(2))
+                    && idVal.linenum == 1
+                    && idVal.charnum == 1;
+        }
+    }
+
+    public boolean testEmptyStringIsEOF() throws IOException {
+        String test = "";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return  token.sym == sym.EOF;
+        }
+    }
+
 
     /**
      * testAllTokens
