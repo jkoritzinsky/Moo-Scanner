@@ -293,4 +293,17 @@ public class P2 {
                     && value.charnum == 2;
         }
     }
+
+    public boolean keywordsParsedAsKeywordNotIdentifier() throws IOException {
+        String test="bool";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.BOOL
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
 }

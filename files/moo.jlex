@@ -55,6 +55,31 @@ class StrLitTokenVal extends TokenVal {
 class CharNum {
     static int num=1;
 }
+
+// A cache for the fields in the sym class
+class SymFields {
+    static SymFields instance = new SymFields();
+
+    private java.lang.reflect.Field[] fields;
+
+    private SymFields() {
+        fields = sym.class.getDeclaredFields();
+    }
+
+    int getTokenId(String tokenName) {
+        try {
+            for(java.lang.reflect.Field field : fields) {
+                if(java.lang.reflect.Modifier.isStatic(field.getModifiers())
+                    && field.getName().compareToIgnoreCase(tokenName) == 0) {
+                    return (int)field.get(null);
+                }
+            }
+        } catch(IllegalAccessException e) {
+            return -1;
+        }
+        return -1;
+    }
+}
 %%
 IDENTIFIER = [A-Za-z_][A-Za-z0-9_]*
 ESCAPED = [\\][nt'?\"\\]
@@ -91,75 +116,9 @@ return new Symbol(sym.EOF);
     CharNum.num = 1;
 }
 
-"bool" {
+"bool"|"int"|"void"|"true"|"false"|"struct"|"cin"|"cout"|"if"|"else"|"while"|"return" {
     TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.BOOL, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"int" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.INT, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"void" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.VOID, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"true" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.TRUE, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"false" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.FALSE, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"struct" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.STRUCT, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"cin" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.CIN, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"cout" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.COUT, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"if" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.IF, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"else" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.ELSE, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"while" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.WHILE, tok);
-    CharNum.num += yytext().length();
-    return S;
-}
-"return" {
-    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
-    Symbol S = new Symbol(sym.RETURN, tok);
+    Symbol S = new Symbol(SymFields.instance.getTokenId(yytext()), tok);
     CharNum.num += yytext().length();
     return S;
 }
@@ -170,7 +129,6 @@ return new Symbol(sym.EOF);
         CharNum.num += yytext().length();
         return S;
     }
-
 
 
 {QUOTE}({STRING_CHAR}|{ESCAPED})*{QUOTE}  {
