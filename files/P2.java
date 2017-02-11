@@ -787,4 +787,13 @@ public class P2 {
             return notToken.sym == sym.NOT && assignToken.sym == sym.ASSIGN;
         }
     }
+
+    public boolean anIllegalCharacterIsNotTokenized() throws IOException {
+        String test = "^";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return token.sym == sym.EOF;
+        }
+    }
 }

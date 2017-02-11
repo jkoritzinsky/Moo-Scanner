@@ -1,0 +1,27 @@
+"Test string"
+"Test with escape \n"
+"Test with invalid escape \z"
+"# Not a comment"
+"// Not a comment"
+"Test unclosed
+"Test unclosed with bad escape \z
+identifier
+_identifier
+_id3nt1f13r
+5
+
+bool  int   void  true  false  struct
+cin   cout  if    else  while  return 
+
+09876543212345678987654321234567898765432123456789876543212345678987654321234567898765432123456789087654321234567890987654321
+
+#comment
+# comment
+// comment
+//comment
+
+{
+}
+();,.<<>>++--+-*/!&&||!===<><=>==
+
+^
