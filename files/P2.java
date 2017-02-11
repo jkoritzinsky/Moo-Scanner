@@ -11,7 +11,7 @@ import java_cup.runtime.*;  // defines Symbol
  * numbers, values associated with tokens)
  */
 public class P2 {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
                                            // exception may be thrown by yylex
         P2 p1 = new P2();
         Method[] testMethods = P2.class.getMethods();
@@ -30,6 +30,7 @@ public class P2 {
                     }
                 } catch (IllegalAccessException | InvocationTargetException ex){
                     System.out.printf("Test %s failed\n", method.getName());
+                    ex.printStackTrace();
                 }
             }
         }
@@ -46,7 +47,7 @@ public class P2 {
      * correctness of the scanner by comparing the input and output files
      * (e.g., using a 'diff' command).
      */
-    private void testAllTokens() throws IOException {
+    private boolean testAllTokens() throws IOException {
         // open input and output files
         FileReader inFile = null;
         PrintWriter outFile = null;
@@ -193,5 +194,6 @@ public class P2 {
             token = scanner.next_token();
         } // end while
         outFile.close();
+        return true;
     }
 }
