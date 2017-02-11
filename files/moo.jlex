@@ -67,6 +67,7 @@ QUOTE = \042
 %implements java_cup.runtime.Scanner
 %function next_token
 %type java_cup.runtime.Symbol
+%state comment
 
 %eofval{
 return new Symbol(sym.EOF);
@@ -76,13 +77,24 @@ return new Symbol(sym.EOF);
 
 %%
 
+{COMMENT_START} {
+    yybegin(comment);
+}
+
+<comment>.* {
+    CharNum.num += yytext().length();
+}
+<comment>[\n] {
+    yybegin(YYINITIAL);
+    CharNum.num = 1;
+}
+
 "bool" {
     TokenVal tok = new TokenVal(yyline+1, CharNum.num);
     Symbol S = new Symbol(sym.BOOL, tok);
     CharNum.num += yytext().length();
     return S;
 }
-
 "int" {
     TokenVal tok = new TokenVal(yyline+1, CharNum.num);
     Symbol S = new Symbol(sym.INT, tok);
@@ -149,7 +161,6 @@ return new Symbol(sym.EOF);
     CharNum.num += yytext().length();
     return S;
 }
-
 
 {IDENTIFIER} {
         Symbol S = new Symbol(sym.ID,
