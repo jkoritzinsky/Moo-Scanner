@@ -13,7 +13,7 @@ import java_cup.runtime.*;  // defines Symbol
 public class P2 {
     public static void main(String[] args){
         boolean testsFailed = false;
-        P2 p1 = new P2();
+        P2 p2 = new P2();
         Method[] testMethods = P2.class.getMethods();
 
         for (Method method : testMethods) {
@@ -21,10 +21,10 @@ public class P2 {
             // By my design, all of the rest of the methods on P1
             // are test methods.
             if (method.getDeclaringClass() == P2.class
-                    && method.getName() != "main") {
+                    && !method.getName().equals("main")) {
                 CharNum.num = 1;
                 try {
-                    boolean passed = (boolean) method.invoke(p1);
+                    boolean passed = (boolean) method.invoke(p2);
                     if (!passed) {
                         System.out.printf("Test %s failed\n", method.getName());
                         testsFailed = true;
@@ -380,7 +380,7 @@ public class P2 {
     }
 
     public boolean canReadTokenLineAfterComment() throws IOException {
-        String test="// My comment \n5";
+        String test = "// My comment \n5";
         try (StringReader reader = new StringReader(test)) {
             Yylex lexer = new Yylex(reader);
             Symbol token = lexer.next_token();
@@ -393,7 +393,7 @@ public class P2 {
     }
 
     public boolean whitespaceIsIgnoredButCharNumIsSummed() throws IOException {
-        String test="\tidentifier";
+        String test = "\tidentifier";
         try (StringReader reader = new StringReader((test))) {
             Yylex lexer = new Yylex(reader);
             Symbol token = lexer.next_token();
@@ -405,7 +405,7 @@ public class P2 {
     }
 
     public boolean keywordsParsedAsKeywordNotIdentifier() throws IOException {
-        String test="bool";
+        String test = "bool";
         try (StringReader reader = new StringReader(test)) {
             Yylex lexer = new Yylex(reader);
             Symbol token = lexer.next_token();
@@ -414,6 +414,342 @@ public class P2 {
                     && value.linenum == 1
                     && value.charnum == 1
                     && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean leftCurlyBracketParsedCorrectly() throws IOException {
+        String test = "{";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.LCURLY
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean rightCurlyBracketParsedCorrectly() throws IOException {
+        String test = "}";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.RCURLY
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+
+    public boolean leftParenParsedCorrectly() throws IOException {
+        String test = "(";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.LPAREN
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean rightParenParsedCorrectly() throws IOException {
+        String test = ")";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.RPAREN
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean semiColonParsedCorrectly() throws IOException {
+        String test = ";";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.SEMICOLON
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean commaParsedCorrectly() throws IOException {
+        String test = ",";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.COMMA
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean dotParsedCorrectly() throws IOException {
+        String test = ".";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.DOT
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean writeOperatorParsedCorrectly() throws IOException {
+        String test = "<<";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.WRITE
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean readOperatorParsedCorrectly() throws IOException {
+        String test = ">>";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.READ
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean plusPlusParsedCorrectly() throws IOException {
+        String test = "++";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.PLUSPLUS
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean minusMinusParsedCorrectly() throws IOException {
+        String test = "--";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.MINUSMINUS
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean plusParsedCorrectly() throws IOException {
+        String test = "+";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.PLUS
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+    public boolean minusParsedCorrectly() throws IOException {
+        String test = "-";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.MINUS
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean timesParsedCorrectly() throws IOException {
+        String test = "*";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.TIMES
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean divideParsedCorrectly() throws IOException {
+        String test = "/";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.DIVIDE
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean notParsedCorrectly() throws IOException {
+        String test = "!";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.NOT
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean andOperatorParsedCorrectly() throws IOException {
+        String test = "&&";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.AND
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean orOperatorParsedCorrectly() throws IOException {
+        String test = "||";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.OR
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean equalsOperatorParsedCorrectly() throws IOException {
+        String test = "==";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.EQUALS
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean notEqualsOperatorParsedCorrectly() throws IOException {
+        String test = "!=";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.NOTEQUALS
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean lessThanOperatorParsedCorrectly() throws IOException {
+        String test = "<";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.LESS
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean greaterThanParsedCorrectly() throws IOException {
+        String test = ">";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.GREATER
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean lessEqualParsedCorrectly() throws IOException {
+        String test = "<=";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.LESSEQ
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean greaterEqualParsedCorrectly() throws IOException {
+        String test = ">=";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.GREATEREQ
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean assignParsedCorrectly() throws IOException {
+        String test = "=";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            TokenVal value = ((TokenVal) token.value);
+            return token.sym == sym.ASSIGN
+                    && value.linenum == 1
+                    && value.charnum == 1
+                    && CharNum.num == test.length() + 1;
+        }
+    }
+    
+    public boolean twoCharacterOperatorWithSpaceInMiddleIsParsedAsTwoTokens()
+        throws IOException {
+        String test = "! =";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol notToken = lexer.next_token();
+            Symbol assignToken = lexer.next_token();
+            return notToken.sym == sym.NOT && assignToken.sym == sym.ASSIGN;
         }
     }
 }
