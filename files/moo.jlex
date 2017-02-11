@@ -71,6 +71,80 @@ return new Symbol(sym.EOF);
 
 %%
 
+"bool" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.BOOL, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+
+"int" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.INT, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"void" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.VOID, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"true" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.TRUE, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"false" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.FALSE, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"struct" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.STRUCT, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"cin" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.CIN, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"cout" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.COUT, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"if" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.IF, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"else" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.ELSE, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"while" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.WHILE, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+"return" {
+    TokenVal tok = new TokenVal(yyline+1, CharNum.num);
+    Symbol S = new Symbol(sym.RETURN, tok);
+    CharNum.num += yytext().length();
+    return S;
+}
+
 {DIGIT}+  { // NOTE: the following computation of the integer value does NOT
             //       check for overflow.  This must be changed.
             int val = (new Integer(yytext())).intValue();
