@@ -37,7 +37,7 @@ ErrMsg.class: ErrMsg.java
 ###
 .PHONY: test clean cleantest
 
-test:
+test: P2.class
 	java -cp $(CP) P2 
 	diff allTokens.in allTokens.out
 

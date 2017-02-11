@@ -55,12 +55,14 @@ class CharNum {
     static int num=1;
 }
 %%
+IDENTIFIER = [A-Za-z_][A-Za-z0-9_]*
 ESCAPED = [\\][nt'?\"\\]
 ESCAPED_BAD = [\\][^nt'\"?\\]
+COMMENT_START =//|#
 STRING_CHAR = [^\n\"\\]
 DIGIT=        [0-9]
 WHITESPACE=   [\040\t]
-QUOTE = [\"]
+QUOTE = \042
 
 %implements java_cup.runtime.Scanner
 %function next_token
@@ -147,6 +149,16 @@ return new Symbol(sym.EOF);
     CharNum.num += yytext().length();
     return S;
 }
+
+
+{IDENTIFIER} {
+        Symbol S = new Symbol(sym.ID,
+            new IdTokenVal(yyline, CharNum.num, yytext()));
+        CharNum.num += yytext().length();
+        return S;
+    }
+
+
 
 {QUOTE}({STRING_CHAR}|{ESCAPED})*{QUOTE}  {
                                     Symbol S = new Symbol(sym.STRINGLITERAL,
