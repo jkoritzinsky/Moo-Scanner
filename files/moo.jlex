@@ -1,4 +1,5 @@
 import java_cup.runtime.*; // defines the Symbol class
+import java.math.BigInteger;
 
 // The generated scanner will return a Symbol for each token that it finds.
 // A Symbol contains an Object field named value; that field will be of type
@@ -197,9 +198,9 @@ return new Symbol(sym.EOF);
                                }
 
 {DIGIT}+  {
-            long longval = (new Long(yytext())).longValue();
+            BigInteger bigInt = new BigInteger(yytext());
             int val;
-            if (longval > Integer.MAX_VALUE) {
+            if (bigInt.compareTo(new BigInteger(Integer.toString(Integer.MAX_VALUE))) == 1) {
                String msg = "integer literal too large; using max value";
                ErrMsg.warn(yyline+1, CharNum.num, msg);
                val = Integer.MAX_VALUE;
