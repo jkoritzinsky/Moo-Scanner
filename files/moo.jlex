@@ -297,12 +297,17 @@ return new Symbol(sym.EOF);
             return S;
           }
 
-"&&"      { Symbol S = new Symbol(sym.OR, new TokenVal(yyline+1, CharNum.num));
+"||"      { Symbol S = new Symbol(sym.OR, new TokenVal(yyline+1, CharNum.num));
             CharNum.num++;
             return S;
           }
 
 "!="      { Symbol S = new Symbol(sym.NOTEQUALS, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num++;
+            return S;
+          }
+
+"!"       { Symbol S = new Symbol(sym.NOT, new TokenVal(yyline+1, CharNum.num));
             CharNum.num++;
             return S;
           }
