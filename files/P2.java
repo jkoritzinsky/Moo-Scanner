@@ -12,7 +12,7 @@ import java_cup.runtime.*;  // defines Symbol
  */
 public class P2 {
     public static void main(String[] args){
-                                           // exception may be thrown by yylex
+        boolean testsFailed = false;
         P2 p1 = new P2();
         Method[] testMethods = P2.class.getMethods();
 
@@ -27,15 +27,16 @@ public class P2 {
                     boolean passed = (boolean) method.invoke(p1);
                     if (!passed) {
                         System.out.printf("Test %s failed\n", method.getName());
+                        testsFailed = true;
                     }
                 } catch (IllegalAccessException | InvocationTargetException ex){
                     System.out.printf("Test %s failed\n", method.getName());
                     ex.printStackTrace();
+                    testsFailed = true;
                 }
             }
         }
-    
-        // ADD CALLS TO OTHER TEST METHODS HERE
+        System.exit(testsFailed ? 1 : 0);
     }
 
     public boolean testGoodIntLiteral() throws IOException {
@@ -71,13 +72,13 @@ public class P2 {
     /**
      * testAllTokens
      *
-     * Open and read from file allTokens.txt
+     * Open and read from file allTokens.in
      * For each token read, write the corresponding string to allTokens.out
      * If the input file contains all tokens, one per line, we can verify
      * correctness of the scanner by comparing the input and output files
      * (e.g., using a 'diff' command).
      */
-    private boolean testAllTokens() throws IOException {
+    public boolean testAllTokens() throws IOException {
         // open input and output files
         FileReader inFile = null;
         PrintWriter outFile = null;
@@ -225,5 +226,101 @@ public class P2 {
         } // end while
         outFile.close();
         return true;
+    }
+
+    public boolean validStringParsesAsString() throws IOException
+    {
+        String test = "\"Test string with valid escape sequence\\n\"";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            StrLitTokenVal value = ((StrLitTokenVal) token.value);
+            return  token.sym == sym.STRINGLITERAL
+                    && CharNum.num == test.length() + 1
+                    && value.strVal.equals(test)
+                    && value.linenum == 1
+                    && value.charnum == 1;
+        }
+    }
+
+    public boolean stringWithInvalidEscapeIsNotTokenized() throws IOException {
+        String test = "\"Test string with invalid escape sequence \\z\"";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return token.sym == sym.EOF;
+        }
+    }
+
+    public boolean unterminatedStringIsNotTokenized() throws IOException {
+        String test = "\"Test string with valid escape sequence\\n";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return token.sym == sym.EOF;
+        }
+    }
+
+    public boolean unterminatedStringWithBadEscapeSequenceIsNotTokenized()
+        throws IOException {
+        String test = "\"Test string with invalid escape sequence \\z";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return token.sym == sym.EOF;
+        }
+    }
+
+    public boolean commentStartedWithSlashNotTokenized() throws IOException {
+        String test = "//This is a comment";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return token.sym == sym.EOF;
+        }
+    }
+
+    public boolean commentStartedWithPoundSignNotTokenized()
+            throws IOException {
+        String test = "# This is a comment";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return token.sym == sym.EOF;
+        }
+    }
+
+    public boolean commentIncreasesCharNum() throws IOException {
+        String test = "# This is a comment";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return CharNum.num == test.length() + 1;
+        }
+    }
+
+    public boolean canReadTokenLineAfterComment() throws IOException {
+        String test="// My comment \n5";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IntLitTokenVal value = ((IntLitTokenVal) token.value);
+            return token.sym == sym.INTLITERAL
+                    && CharNum.num == 2
+                    && value.linenum == 2
+                    && value.charnum == 1;
+        }
+    }
+
+    public boolean whitespaceIsIgnoredButCharNumIsSummed() throws IOException {
+        String test="\tidentifier";
+        try (StringReader reader = new StringReader((test))) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            IdTokenVal value = ((IdTokenVal) token.value);
+            return CharNum.num == test.length() + 1
+                    && value.linenum == 1
+                    && value.charnum == 2;
+        }
     }
 }

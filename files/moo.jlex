@@ -79,6 +79,7 @@ return new Symbol(sym.EOF);
 %%
 
 {COMMENT_START} {
+    CharNum.num += yytext().length();
     yybegin(comment);
 }
 
@@ -165,7 +166,7 @@ return new Symbol(sym.EOF);
 
 {IDENTIFIER} {
         Symbol S = new Symbol(sym.ID,
-            new IdTokenVal(yyline, CharNum.num, yytext()));
+            new IdTokenVal(yyline + 1, CharNum.num, yytext()));
         CharNum.num += yytext().length();
         return S;
     }
@@ -174,7 +175,7 @@ return new Symbol(sym.EOF);
 
 {QUOTE}({STRING_CHAR}|{ESCAPED})*{QUOTE}  {
                                     Symbol S = new Symbol(sym.STRINGLITERAL,
-                                        new StrLitTokenVal(yyline, CharNum.num, yytext()));
+                                        new StrLitTokenVal(yyline+1, CharNum.num, yytext()));
                                     CharNum.num += yytext().length();
                                     return S;
                                }
