@@ -386,6 +386,16 @@ public class P2 {
         }
     }
 
+    public boolean stringWithUnfinishedEscapeSequenceIsNotTokenized()
+        throws IOException {
+        String test = "\"Test string with unfinished escape \\\n\"";
+        try (StringReader reader = new StringReader(test)) {
+            Yylex lexer = new Yylex(reader);
+            Symbol token = lexer.next_token();
+            return token.sym == sym.EOF;
+        }
+    }
+
     public boolean commentStartedWithSlashNotTokenized() throws IOException {
         String test = "//This is a comment";
         try (StringReader reader = new StringReader(test)) {

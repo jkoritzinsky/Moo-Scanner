@@ -83,7 +83,7 @@ class SymFields {
 %%
 IDENTIFIER = [A-Za-z_][A-Za-z0-9_]*
 ESCAPED = [\\][nt'?\"\\]
-ESCAPED_BAD = [\\][^nt'\"?\\]
+ESCAPED_BAD = [\\][^nt'\"?\\\n]
 COMMENT_START =//|#
 STRING_CHAR = [^\n\"\\]
 DIGIT=        [0-9]
